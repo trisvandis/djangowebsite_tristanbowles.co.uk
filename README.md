@@ -5,6 +5,8 @@ It is still currently in devlopment. New features include a working blog, a subs
 
 Requirements for testing enviroment:
 
+Python == 3.4
+
 Django==1.9
 
 django-crispy-forms==1.6.0
