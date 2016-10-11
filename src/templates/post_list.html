@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+     
+{% block content %}
+ 
+ 
+
+ 
+  <h1>Development Blog
+  
+<!--superusers menu-->
+    
+    {% if request.user.is_staff or request.user.is_superuser %}
+    <small>
+        | <a href="{{ request.build_absolute_uri }}create/">Create New</a>
+      </small>
+    {% endif %}
+  </h1>
+  
+  
+  
+  <form method='GET' action=''>
+    <div class='input-group'>
+      <input class='form-control' type='text' name='q' plceholders='Search posts' value='{{ request.GET.q }}'/>
+      <span class='input-group-btn'>
+      <!--input class='btn btn-default' type='submit' value='Search'/-->
+      <button class='btn btn-default' type='submit'>Search <i class='fa fa-search'></i></button>
+      </span>
+    </div>
+  </form>
+  
+ <div class="row">
+    {% for obj in object_list %}
+    
+    <div class="col-md-12">
+      <div class="thumbnail">
+        {% if obj.image %}
+        <img src='{{ obj.image.url }}' class='img-responsive'>
+        {% endif %}
+      <div class="caption post-detail-item">
+        <h3>{% if obj.draft %}<text style="color:red;">Draft: {% endif %}<a href='{{ obj.get_absolute_url }}'>{{ obj.title }}</a> <small>{{ obj.published }}{% if obj.published > today %}<text style="color:green;"> (Future Post)</text>{% endif %}</small></h3>
+            {% if obj.user.get_full_name %}
+              <p>Author: {{ obj.user.get_full_name }}</p>
+            {% endif %}
+        <p><small>Read Time: {% if obj.read_time <= 1 %} Less than 1 min {% else %}{{ obj.read_time }} mins {% endif %}</small></p>
+        <p>{{ obj.get_markdown|truncatewords_html:10 }}</p>
+        
+        <p><a href="{{ obj.get_absolute_url }}" class="btn btn-primary" role="button">View</a></p>
+      </div>
+    </div>
+  
+  <hr/>
+  </div>
+
+{% endfor %}
+
+<div class="pagination">
+    <span class="step-links">
+        {% if object_list.has_previous %}
+            <a href="?{{ page_request_var }}={{ object_list.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ object_list.number }} of {{ object_list.paginator.num_pages }}.
+        </span>
+
+        {% if object_list.has_next %}
+            <a href="?{{ page_request_var }}={{ object_list.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">next</a>
+        {% endif %}
+    </span>
+</div>
+
+ <!--superusers menu-->
+    
+    {% if request.user.is_staff or request.user.is_superuser %}
+    <small>
+      <a href="{{ request.build_absolute_uri }}create/">Create New</a>
+    </small>
+    {% endif %}
+    
+    
+</div>
+
+
+
+
+
+
+
+
+    
+{% endblock content %}

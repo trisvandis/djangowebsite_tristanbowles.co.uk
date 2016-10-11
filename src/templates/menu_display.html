@@ -1,0 +1,56 @@
+{% load staticfiles %}
+<nav class="navbar navbar-default navbar-default">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{% url 'contact:home' %}" src="{% static 'images/drawing.png' %}" alt="Tris logo" height="20" width="20"></a>
+        </div>
+ 
+    <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav" id="myTab">
+                <li class="{% if nbar == 'blog' %}active{% endif %}"><a href="{% url 'posts:list' %}">Blog<span class="sr-only">(current)</span></a>
+                </li>
+                <li class="{% if nbar == 'about' %}active{% endif %}"><a href="{% url 'contact:about' %}">About</a>
+                </li>
+                <li class="{% if nbar == 'contact' %}active{% endif %}"><a href="{% url 'contact:contact' %}">Contact</a>
+                </li>
+            <!--li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Links <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a href="http://www.tristanbowles.co.uk/links/">Web Development Tools</a></li>
+                <li><a href="http://www.tristanbowles.co.uk/links/">Coding Tutorials</a></li>
+                <li role="separator" class="divider"></li>
+                <li><a href="http://www.tristanbowles.co.uk/links/">Other Links</a></li>
+              </ul>
+            </li>-->
+                <li class="{% if nbar == 'subscribe' %}active{% endif %}"><a href="{% url 'contact:join' %}">Subscribe</a>
+                </li>
+            </ul>
+    
+          <!--<ul class="nav navbar-nav navbar-right">
+            <form class="navbar-form navbar-left" role="search" method='GET' action=''>
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Search posts " name='q' value='{{ request.GET.q }}'>
+                </div>
+            <button type="submit" class="btn btn-default">Submit</button>
+            </form>
+          </ul>-->
+          
+            <ul class="nav navbar-nav navbar-right">
+                {% if not request.user.is_authenticated %}
+                    <li class='pull-right'><a href="{% url 'login' %}">Login</a></li>
+                    <li class='pull-right'><a href="{% url 'register' %}">Register</a></li>
+                {% else %}
+                    <li class='pull-right'><a href="{% url 'logout' %}">Logout</a></li>
+                {% endif %}
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>

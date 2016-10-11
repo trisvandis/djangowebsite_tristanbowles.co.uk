@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% load urlify %}
+{% load crispy_forms_tags %}
+
+{% block head_title %}
+{{ instance.title }} | {{ block.super }}
+{% endblock head_title%}
+
+{% block content %}
+
+<div class="row">
+<div class="col-md-12">
+   
+<h1>{{ title }}
+<small>
+{% if instance.draft %}
+<span style="color:red">Draft: </span>
+{% endif %}
+{{ instance.published }}
+{% if instance.published > today %}
+<text style="color:green;"> (Future Post - Staff Only)</text>
+{% endif %}
+<!--superusers menu-->
+{% if request.user.is_staff or request.user.is_superuser %}
+<a href="{{ request.build_absolute_uri }}edit/"> Update</a> |
+<a href="{{ request.build_absolute_uri }}delete/" style="color:red;"> Delete </a>
+{% endif %}
+</small>
+</h1>
+    
+{% if instance.user.get_full_name %}
+<p>Author: {{ instance.user.get_full_name }}</p>
+{% endif %}
+    
+   
+<!--Title:{{ instance.title }}<br/>-->
+
+{% if instance.image %}
+<img src='{{ instance.image.url }}' class='img-responsive' /><br/>
+       {% endif %}
+
+
+<div class='post-detail-item'><!--references content markdown thirdparty plug-in -->
+{{ instance.get_markdown }}
+  </div>
+
+<br/><!--Content:-->
+      
+<b>Last updated: </b>{{ instance.updated }}<br/>
+<b>Created: </b>{{ instance.timestamp }}<br/>
+
+
+     
+<!--shares-->
+
+
+<a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}">Facebook</a>
+<a href="https://twitter.com/home?status={{ instance.content|truncatechars:60|urlify }}%20@trisvandis%20{{ request.build_absolute_uri  }}">Twitter
+    </a>
+<a href='https://plus.google.com/share?url={{ request.build_absolute_uri }}'>Google Plus</a>
+<a href="https://www.linkedin.com/shareArticle?mini=true&url={{ request.build_absolute_uri  }}&title={{ instance.title }}&summary={{ share_string }}&source={{ request.build_absolute_uri }}">Linked</a>
+</div>
+</div>
+
+<div>
+  <h3 class='lead'>Comments</h3>
+  {% if request.user.is_authenticated %}
+  <form method='POST' action='.'>{% csrf_token %}
+    {{ comment_form|crispy }}
+    <input type='submit' value='Post comment' class='btn btn-default'>
+  </form>
+  {% else %}
+  <p>You must <a href="{% url 'login' %}">login</a> to comment</p>
+  {% endif %}
+  {% for comment in comments %}
+
+<blockquote>
+    {{ comment.content }}<br/>
+    <footer>{{ comment.timestamp|timesince }} by {{ comment.user }} | <a href='{{ comment.get_absolute_url }}'>{% if comment.children.count > 0 %}{{ comment.children.count }} Comment{% if comment.children.count > 1%}s{% endif %}</a> | {% endif %}<a class='comment-reply-btn' href='#'>Reply</a></footer>
+   <div class='comment-reply'><!--comment reply-->
+      {% for child_comment in comment.children %}
+    <blockquote>
+      <p>{{ child_comment.content }}</p>
+      <footer>{{ child_comment.timestamp|timesince }} by {{ child_comment.user }}</footer>
+    </blockquote>
+    {% endfor %}
+  {% if request.user.is_authenticated %}
+    <form method='POST' action='.'>{% csrf_token %}
+      {{ comment_form|crispy }}
+    <input type='hidden' name='parent_id' value='{{ comment.id }}'>
+    <input type='submit' value='Reply' class='btn btn-default'>
+
+    </form>
+ {% endif %}
+   </div><!--end of comment reply-->
+    
+
+</blockquote>
+  <hr/>
+  
+  {% endfor %}
+</div>
+
+
+{% endblock content %}
+
